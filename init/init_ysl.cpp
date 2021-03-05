@@ -91,12 +91,19 @@ void load_ysl(bool is_india)
     property_override("ro.product.device", "ysl");
 }
 
+void load_fluid()
+{
+    property_override("ro.fluid.cpu", "Snapdragon 625");
+    property_override("ro.fluid.maintainer", "Andrey Norton");
+}
+
 void vendor_load_properties()
 {
     std::string region = android::base::GetProperty("ro.boot.hwc", "");
     
     check_device();
     load_ysl(region.find("INDIA") != std::string::npos);
+    load_fluid();
 
     property_override("dalvik.vm.heapstartsize", heapstartsize);
     property_override("dalvik.vm.heapgrowthlimit", heapgrowthlimit);

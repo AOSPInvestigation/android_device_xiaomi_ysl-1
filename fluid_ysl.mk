@@ -18,25 +18,27 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
-#
-# All components inherited here go to system_ext image
-#
+# All components inherited here go to system_ext image.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/handheld_system_ext.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/telephony_system_ext.mk)
 
-# Inherit from mido device
+# Inherit from ysl device.
 $(call inherit-product, device/xiaomi/ysl/device.mk)
 
-# Inherit some common RevengeOS stuff.
-$(call inherit-product, vendor/revengeos/config/common.mk)
-
-# Inherit some common RevengeOS flags
-REVENGEOS_BUILDTYPE := OFFICIAL
+# Inherit some common Project-Fluid flags.
 TARGET_BOOT_ANIMATION_RES := 720
+ifeq ($(WITH_GAPPS), true)
+TARGET_INCLUDE_GAPPS := true
+TARGET_GAPPS_ARCH := arm64
+TARGET_SUPPORTS_GOOGLE_RECORDER := true
+endif
 
-# Device identifier. This must come after all inclusions
+# Inherit some common Project-Fluid stuff.
+$(call inherit-product, vendor/fluid/config/common.mk)
+
+# Device identifier. This must come after all inclusions.
 PRODUCT_DEVICE := ysl
-PRODUCT_NAME := revengeos_ysl
+PRODUCT_NAME := fluid_ysl
 BOARD_VENDOR := Xiaomi
 PRODUCT_BRAND := Xiaomi
 PRODUCT_MODEL := Redmi S2
