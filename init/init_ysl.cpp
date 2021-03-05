@@ -41,8 +41,6 @@
 #include "vendor_init.h"
 #include "property_service.h"
 
-using android::base::GetProperty;
-
 char const *heapstartsize;
 char const *heapgrowthlimit;
 char const *heapsize;
@@ -50,13 +48,13 @@ char const *heapminfree;
 char const *heapmaxfree;
 char const *heaptargetutilization;
 
-void property_override(char const prop[], char const value[], bool add = true)
+void property_override(char const prop[], char const value[])
 {
     auto pi = (prop_info *) __system_property_find(prop);
 
     if (pi != nullptr) {
         __system_property_update(pi, value, strlen(value));
-    } else if (add) {
+    } else {
         __system_property_add(prop, strlen(prop), value, strlen(value));
     }
 }
@@ -66,16 +64,8 @@ void check_device()
     struct sysinfo sys;
 
     sysinfo(&sys);
-
-    if (sys.totalram > 5072ull * 1024 * 1024) {
-        // from - phone-xhdpi-6144-dalvik-heap.mk
-        heapstartsize = "16m";
-        heapgrowthlimit = "256m";
-        heapsize = "512m";
-        heaptargetutilization = "0.5";
-        heapminfree = "8m";
-        heapmaxfree = "32m";
-    } else if (sys.totalram > 3072ull * 1024 * 1024) {
+    
+    if (sys.totalram > 3072ull * 1024 * 1024) {
         // from - phone-xxhdpi-4096-dalvik-heap.mk
         heapstartsize = "8m";
         heapgrowthlimit = "256m";
@@ -94,9 +84,19 @@ void check_device()
     }
 }
 
+void load_ysl(bool is_india)
+{
+    property_override("ro.product.model", (is_india ? "Redmi Y2" : "Redmi S2"));
+    property_override("ro.build.product", "ysl");
+    property_override("ro.product.device", "ysl");
+}
+
 void vendor_load_properties()
 {
+    std::string region = android::base::GetProperty("ro.boot.hwc", "");
+    
     check_device();
+    load_ysl(region.find("INDIA") != std::string::npos);
 
     property_override("dalvik.vm.heapstartsize", heapstartsize);
     property_override("dalvik.vm.heapgrowthlimit", heapgrowthlimit);
